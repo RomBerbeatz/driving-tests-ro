@@ -2,165 +2,208 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Driving Tests Pro</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Цветовые палитры (Светлая и Тёмная) */
+        /* --- ПАЛИТРА И ПЕРЕМЕННЫЕ --- */
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --bg-body: #f3f4f6;
+            --primary: #007aff; 
+            --primary-hover: #005bb5;
+            --primary-light: rgba(0, 122, 255, 0.1);
+            --bg-body: #f2f2f7; 
             --bg-app: #ffffff;
-            --text-dark: #111827;
-            --text-gray: #6b7280;
-            --correct-bg: #d1fae5;
-            --correct-text: #059669;
-            --wrong-bg: #fee2e2;
-            --wrong-text: #dc2626;
-            --border: #e5e7eb;
-            --btn-nav: #f9fafb;
-            --header-bg: rgba(255, 255, 255, 0.9);
-            --radius: 1rem;
+            --text-dark: #1c1c1e;
+            --text-gray: #8e8e93;
+            --correct-bg: #e5f4e7;
+            --correct-text: #34c759;
+            --wrong-bg: #fce8e8;
+            --wrong-text: #ff3b30;
+            --border: #e5e5ea;
+            --btn-nav: #f2f2f7;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.08);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --bezier: cubic-bezier(0.25, 1, 0.5, 1); /* Фирменная кривая Apple */
         }
 
         body.dark-theme {
-            --bg-body: #0f172a;
-            --bg-app: #1e293b;
-            --text-dark: #f8fafc;
-            --text-gray: #94a3b8;
-            --correct-bg: #064e3b;
-            --correct-text: #34d399;
-            --wrong-bg: #7f1d1d;
-            --wrong-text: #f87171;
-            --border: #334155;
-            --btn-nav: #0f172a;
-            --header-bg: rgba(30, 41, 59, 0.9);
+            --primary: #0a84ff;
+            --primary-light: rgba(10, 132, 255, 0.15);
+            --bg-body: #000000;
+            --bg-app: #1c1c1e;
+            --text-dark: #f2f2f7;
+            --text-gray: #98989d;
+            --correct-bg: rgba(50, 215, 75, 0.2);
+            --correct-text: #32d74b;
+            --wrong-bg: rgba(255, 69, 58, 0.2);
+            --wrong-text: #ff453a;
+            --border: #38383a;
+            --btn-nav: #2c2c2e;
+            --header-bg: rgba(28, 28, 30, 0.85);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
         }
 
-        html { font-size: 16px; transition: font-size 0.3s ease; }
+        /* --- БАЗОВЫЕ НАСТРОЙКИ --- */
+        html { font-size: 16px; transition: font-size 0.3s var(--bezier); }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            margin: 0; padding: 0;
-            display: flex; justify-content: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body); color: var(--text-dark);
+            margin: 0; padding: 0; display: flex; justify-content: center;
             overscroll-behavior-y: none; overflow-y: scroll; 
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        
         .app-container {
-            width: 100%; max-width: 600px;
-            background: var(--bg-app);
-            min-height: 100vh; min-height: 100dvh;
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
-            position: relative; transition: background-color 0.3s;
+            width: 100%; max-width: 600px; background: var(--bg-app);
+            min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+            box-shadow: var(--shadow-md); position: relative; 
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
+
+        /* --- АНИМАЦИИ ПЕРЕХОДОВ (SMOOTH UPDATE ENGINE) --- */
+        .smooth-container {
+            opacity: 1; transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.4s var(--bezier);
+        }
+        .smooth-out { opacity: 0; transform: translateY(-10px); }
+        .smooth-in { opacity: 0; transform: translateY(15px); }
+
+        /* Эффект каскада (водопада) для списков */
+        .stagger-item {
+            opacity: 0; transform: translateY(15px);
+            animation: staggerIn 0.5s var(--bezier) forwards;
+            animation-delay: calc(var(--idx) * 0.05s);
+        }
+        @keyframes staggerIn { to { opacity: 1; transform: translateY(0); } }
 
         /* --- ШАПКА --- */
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 1.25rem; background: var(--header-bg); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 20; transition: all 0.3s;
+            padding: 1rem 1.25rem; background: var(--header-bg); 
+            backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); 
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30; 
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
-        .header-left, .header-right { display: flex; align-items: center; gap: 0.5rem; }
-        .app-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); }
-        .timer { font-size: 1rem; font-weight: 700; color: var(--wrong-text); background: var(--wrong-bg); padding: 0.4rem 0.8rem; border-radius: 0.5rem; transition: 0.3s; }
+        .header-left { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; }
+        .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+        
+        .app-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .timer { font-size: 1rem; font-weight: 700; color: var(--wrong-text); background: var(--wrong-bg); padding: 0.4rem 0.8rem; border-radius: 0.5rem; transition: 0.3s; font-variant-numeric: tabular-nums; }
         
         .icon-btn {
-            background: transparent; border: 1px solid var(--border); color: var(--text-dark);
-            width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+            background: var(--btn-nav); border: none; color: var(--text-dark);
+            width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.2s var(--bezier); flex-shrink: 0;
         }
-        .icon-btn:hover { background: var(--btn-nav); border-color: var(--primary); }
-        .zoom-btn { width: auto; padding: 0 0.8rem; font-size: 0.95rem; font-weight: 600; }
+        .icon-btn:hover, .icon-btn:active { transform: scale(0.9); filter: brightness(0.95); }
+        .zoom-btn { width: auto; padding: 0 0.8rem; border-radius: 1.25rem; font-size: 0.95rem; font-weight: 600; }
 
-        /* --- ВКЛАДКИ (TABS) --- */
-        .tabs-container {
-            display: flex; gap: 0.5rem; margin-bottom: 1.25rem;
-            background: var(--btn-nav); padding: 0.4rem; border-radius: 0.75rem; border: 1px solid var(--border);
-        }
+        /* --- ВКЛАДКИ --- */
+        .tabs-container { display: flex; background: var(--btn-nav); padding: 4px; border-radius: 12px; margin-bottom: 1.5rem; transition: background-color 0.4s ease; }
         .tab-btn {
-            flex: 1; padding: 0.6rem; border: none; border-radius: 0.5rem;
-            background: transparent; color: var(--text-gray); font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: 0.2s; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+            flex: 1; padding: 0.6rem; border: none; border-radius: 10px; background: transparent; 
+            color: var(--text-gray); font-weight: 600; font-size: 0.9rem; cursor: pointer; 
+            transition: all 0.3s var(--bezier); display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
         }
-        .tab-btn span.icon { font-size: 1.2rem; }
-        .tab-btn.active { background: var(--bg-app); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .tab-btn span.icon { font-size: 1.2rem; transition: transform 0.3s var(--bezier); }
+        .tab-btn.active { color: var(--text-dark); background: var(--bg-app); box-shadow: var(--shadow-sm); }
+        .tab-btn.active span.icon { transform: scale(1.15) translateY(-2px); }
 
-        /* --- КОНТЕЙНЕРЫ ЭКРАНОВ --- */
-        .screen { flex: 1; padding: 1.25rem; overflow-y: auto; padding-bottom: 7rem; }
+        .screen { flex: 1; padding: 1.25rem; overflow-y: auto; padding-bottom: calc(6rem + var(--safe-bottom)); }
 
-        /* --- ЭКРАН МЕНЮ --- */
+        /* --- СЕТКА МЕНЮ --- */
         .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); gap: 0.75rem; }
         .test-btn {
-            background: var(--bg-app); border: 2px solid var(--border); color: var(--text-dark);
-            padding: 1.2rem 0.5rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; text-align: center;
+            background: var(--bg-app); border: 2px solid var(--border); color: var(--text-dark); padding: 1.2rem 0.5rem; 
+            border-radius: var(--radius-md); font-size: 1.1rem; font-weight: 600; cursor: pointer; 
+            transition: all 0.2s var(--bezier); text-align: center; box-shadow: var(--shadow-sm);
         }
-        .test-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transform: translateY(-2px); }
+        .test-btn:active { border-color: var(--primary); transform: scale(0.95); }
 
-        /* Карточки категорий */
         .cat-list { display: flex; flex-direction: column; gap: 0.75rem; }
         .cat-card {
-            background: var(--bg-app); border: 2px solid var(--border); color: var(--text-dark);
-            padding: 1rem 1.25rem; border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;
-            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-app); border: 2px solid var(--border); color: var(--text-dark); padding: 1.25rem; 
+            border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s var(--bezier);
+            display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);
         }
-        .cat-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transform: translateX(4px); }
-        .cat-name { font-size: 1.05rem; font-weight: 600; line-height: 1.3; }
-        .cat-count { background: var(--btn-nav); color: var(--text-gray); font-size: 0.85rem; font-weight: 700; padding: 0.3rem 0.6rem; border-radius: 1rem; border: 1px solid var(--border); }
+        .cat-card:active { border-color: var(--primary); transform: scale(0.98); }
+        .cat-name { font-size: 1.05rem; font-weight: 600; line-height: 1.3; padding-right: 1rem; transition: color 0.4s; }
+        .cat-count { background: var(--btn-nav); color: var(--text-gray); font-size: 0.85rem; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 1rem; flex-shrink: 0; transition: background-color 0.4s; }
 
         /* --- ЭКРАН ТЕСТА --- */
-        .progress-container { width: 100%; background: var(--border); height: 0.4rem; border-radius: 0.2rem; margin-bottom: 1.25rem; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
+        .progress-container { width: 100%; background: var(--border); height: 6px; border-radius: 3px; margin-bottom: 1.25rem; overflow: hidden; transform: translateZ(0); transition: background-color 0.4s; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s var(--bezier); }
         
-        .question-text { font-size: 1.25rem; font-weight: 600; line-height: 1.5; margin-bottom: 1.25rem; }
-        .question-img { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; border: 1px solid var(--border); object-fit: contain; max-height: 16rem; background: var(--bg-body); box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
+        .question-text { font-size: 1.25rem; font-weight: 600; line-height: 1.45; margin-bottom: 1.25rem; letter-spacing: -0.01em; }
+        .question-img { 
+            width: 100%; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border); 
+            object-fit: contain; max-height: 18rem; background: var(--bg-body); box-shadow: var(--shadow-sm); transition: border-color 0.4s;
+        }
         
         .options-container { display: flex; flex-direction: column; gap: 0.75rem; }
         .option-btn {
-            text-align: left; padding: 1.1rem 1.25rem; background: var(--btn-nav); border: 2px solid transparent; border-radius: 0.75rem;
-            font-size: 1.05rem; font-weight: 500; line-height: 1.4; cursor: pointer; transition: all 0.2s; color: var(--text-dark);
+            text-align: left; padding: 1.25rem 1rem 1.25rem 3rem; background: var(--bg-app); border: 2px solid var(--border); 
+            border-radius: var(--radius-md); font-size: 1.05rem; font-weight: 500; line-height: 1.4; 
+            cursor: pointer; transition: all 0.2s var(--bezier); color: var(--text-dark);
+            position: relative; box-shadow: var(--shadow-sm); overflow: hidden;
         }
-        .option-btn:active { transform: scale(0.98); }
-        .option-btn.selected { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); color: var(--primary); }
+        .option-btn::before {
+            content: ''; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+            width: 1.25rem; height: 1.25rem; border: 2px solid var(--text-gray); border-radius: 6px;
+            transition: all 0.2s ease; box-sizing: border-box;
+        }
+        .option-btn::after {
+            content: '✓'; position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%) scale(0);
+            color: white; font-size: 0.9rem; font-weight: bold; transition: all 0.2s var(--bezier); opacity: 0;
+        }
+        .option-btn:active { transform: scale(0.97); }
+        .option-btn.selected { background: var(--primary-light); border-color: var(--primary); }
+        .option-btn.selected::before { background: var(--primary); border-color: var(--primary); }
+        .option-btn.selected::after { transform: translateY(-50%) scale(1); opacity: 1; }
 
-        /* --- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ --- */
+        /* --- НАВИГАЦИЯ НИЗ --- */
         .bottom-nav {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: var(--header-bg); backdrop-filter: blur(10px);
-            padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; z-index: 10;
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: var(--header-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+            padding: 1rem 1.25rem; padding-bottom: calc(1rem + var(--safe-bottom)); 
+            border-top: 1px solid var(--border); display: flex; gap: 0.75rem; z-index: 20; transition: background-color 0.4s, border-color 0.4s;
         }
-        .action-btn { flex: 1; padding: 1rem; border: none; border-radius: 0.75rem; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.95); }
-        .btn-prev { background: var(--border); color: var(--text-dark); flex: 0.4; }
-        .btn-next { background: var(--primary); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-        .btn-end { background: var(--wrong-bg); color: var(--wrong-text); border: 1px solid var(--wrong-text); flex: 0.5; }
+        .action-btn { 
+            flex: 1; padding: 1rem; border: none; border-radius: var(--radius-md); 
+            font-size: 1.1rem; font-weight: 600; cursor: pointer; color: white; transition: all 0.2s var(--bezier); 
+        }
+        .action-btn:active { transform: scale(0.93); }
+        .btn-prev { background: var(--btn-nav); color: var(--text-dark); flex: 0.4; }
+        .btn-next { background: var(--primary); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3); }
+        .btn-end { background: transparent; color: var(--wrong-text); border: 2px solid var(--wrong-text); flex: 0.5; }
 
-        /* --- ЭКРАН РЕЗУЛЬТАТОВ --- */
-        .result-header { text-align: center; margin-bottom: 1.8rem; padding: 1.5rem 1.25rem; background: var(--btn-nav); border-radius: var(--radius); border: 1px solid var(--border); }
-        .score-circle { width: 7rem; height: 7rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; margin: 0 auto 1rem auto; border: 0.5rem solid var(--primary); color: var(--primary); }
-        
-        .review-card { background: var(--bg-app); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border); }
-        .review-card.wrong { border-left: 0.4rem solid var(--wrong-text); }
-        .review-card.correct { border-left: 0.4rem solid var(--correct-text); }
-        
-        .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 0.4rem; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.6rem; }
+        /* --- РЕЗУЛЬТАТЫ --- */
+        .result-header { text-align: center; margin-bottom: 2rem; padding: 2rem 1.25rem; background: var(--bg-app); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .score-circle { width: 8rem; height: 8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; margin: 0 auto 1.5rem auto; border: 8px solid var(--primary); color: var(--primary); }
+        .review-card { background: var(--bg-app); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.25rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .review-card.wrong { border-left: 6px solid var(--wrong-text); }
+        .review-card.correct { border-left: 6px solid var(--correct-text); }
+        .badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
         .badge-correct { background: var(--correct-bg); color: var(--correct-text); }
         .badge-wrong { background: var(--wrong-bg); color: var(--wrong-text); }
-        
-        .ans-text { margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.4; }
+        .ans-text { margin-top: 0.75rem; font-size: 1rem; line-height: 1.5; }
+        .ans-list { margin: 0.4rem 0 0.8rem 1.2rem; padding-left: 0; list-style-type: disc; opacity: 0.9; }
         .ans-correct { color: var(--correct-text); font-weight: 600; }
-        .ans-wrong { color: var(--wrong-text); text-decoration: line-through; }
+        .ans-wrong { color: var(--wrong-text); }
         .ans-missed { color: var(--text-gray); font-style: italic; }
     </style>
 </head>
@@ -169,178 +212,184 @@
 <div class="app-container">
     <header>
         <div class="header-left">
-            <button id="btn-home" class="icon-btn hidden" onclick="backToMenu()" title="Back to Menu">🏠</button>
-            <div class="app-title" id="top-title">These Goddamn Driving Tests</div>
+            <button id="btn-home" class="icon-btn hidden" onclick="backToMenu()" title="Back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="app-title" id="top-title">Driver's Hub</div>
         </div>
         <div class="header-right">
             <div id="timer" class="timer hidden">30:00</div>
-            <button class="icon-btn zoom-btn" onclick="toggleZoom()" id="btn-zoom" title="Change Text Size">🔍 1x</button>
-            <button class="icon-btn" onclick="toggleTheme()" id="btn-theme" title="Toggle Theme">🌙</button>
+            <button class="icon-btn zoom-btn" onclick="toggleZoom()" id="btn-zoom">aA</button>
+            <button class="icon-btn" onclick="toggleTheme()" id="btn-theme">🌙</button>
         </div>
     </header>
 
-    <div id="screen-menu" class="screen fade-in">
+    <div id="screen-menu" class="screen smooth-container">
         <div class="tabs-container">
             <button class="tab-btn active" onclick="switchTab('official')" id="tab-official">
-                <span class="icon">🚗</span>
-                <span>Official (B)</span>
+                <span class="icon">🚗</span><span>Official</span>
             </button>
             <button class="tab-btn" onclick="switchTab('cat_b')" id="tab-cat_b">
-                <span class="icon">📘</span>
-                <span>Topics (B)</span>
+                <span class="icon">📘</span><span>Cat. B</span>
             </button>
             <button class="tab-btn" onclick="switchTab('cat_a')" id="tab-cat_a">
-                <span class="icon">🏍️</span>
-                <span>Topics (A)</span>
+                <span class="icon">🏍️</span><span>Cat. A</span>
             </button>
         </div>
 
-        <div id="section-info" style="margin-bottom: 1.5rem;">
-            <h2 id="section-title" style="margin: 0 0 0.2rem 0;">Select a Test</h2>
+        <div id="section-info" style="margin-bottom: 1.5rem; padding: 0 0.5rem;">
+            <h2 id="section-title" style="margin: 0 0 0.4rem 0; font-size: 1.5rem;">Select a Test</h2>
             <p id="section-desc" style="color: var(--text-gray); margin: 0; font-size: 0.95rem;">Choose a mode to begin learning.</p>
         </div>
 
-        <div id="content-grid" class="test-grid"></div>
-        <div id="loading-msg" style="text-align: center; padding: 2rem; font-weight: bold; color: var(--primary);">Loading database...</div>
+        <div id="content-grid" class="test-grid smooth-container"></div>
+        <div id="loading-msg" style="text-align: center; padding: 3rem 1rem; font-weight: bold; color: var(--primary);">
+            <div style="font-size: 2rem; margin-bottom: 1rem; animation: pulse 1.5s infinite;">⏳</div>
+            Loading database...
+        </div>
     </div>
 
-    <div id="screen-quiz" class="screen hidden">
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; color: var(--text-gray); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.6rem;">
+    <div id="screen-quiz" class="screen hidden smooth-container">
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+        <div style="display: flex; justify-content: space-between; color: var(--text-gray); font-weight: 600; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">
             <span id="q-counter">Question 1 of 26</span>
             <span id="q-status"></span>
         </div>
         
-        <div class="question-text fade-in" id="q-text"></div>
-        <img id="q-image" class="question-img hidden fade-in" src="" alt="Question Image">
-        
-        <div class="options-container fade-in" id="q-options"></div>
+        <div id="q-wrapper" class="smooth-container">
+            <div class="question-text" id="q-text"></div>
+            <img id="q-image" class="question-img hidden" src="" alt="Question Image">
+            <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: -0.5rem; margin-bottom: 1.25rem; font-style: italic;">Select all correct answers:</p>
+            <div class="options-container" id="q-options"></div>
+        </div>
     </div>
 
-    <div id="quiz-nav" class="bottom-nav hidden">
+    <div id="quiz-nav" class="bottom-nav hidden smooth-container">
         <button class="action-btn btn-prev" id="btn-prev" onclick="prevQuestion()">Back</button>
-        <button class="action-btn btn-end hidden" id="btn-end" onclick="finishTest()">Finish Early</button>
+        <button class="action-btn btn-end hidden" id="btn-end" onclick="finishTest()">End</button>
         <button class="action-btn btn-next" id="btn-next" onclick="nextQuestion()">Next</button>
     </div>
 
-    <div id="screen-result" class="screen hidden">
-        <div class="result-header fade-in">
-            <h2 id="final-status" style="margin-top:0;">Test Complete</h2>
+    <div id="screen-result" class="screen hidden smooth-container">
+        <div class="result-header">
+            <h2 id="final-status" style="margin-top:0; font-size: 1.75rem;">Test Complete</h2>
             <div class="score-circle" id="final-score">22</div>
-            <p style="color: var(--text-gray); font-weight: 500; margin-bottom:0;" id="score-text">out of 26 correct</p>
+            <p style="color: var(--text-gray); font-weight: 500; margin-bottom:0; font-size: 1.1rem;" id="score-text">out of 26 correct</p>
         </div>
         
-        <h3 id="review-title" style="margin: 1.5rem 0 1rem 0;">Mistakes Review</h3>
+        <h3 id="review-title" style="margin: 2rem 0 1.25rem 0.5rem; font-size: 1.4rem;">Review</h3>
         <div id="review-list"></div>
     </div>
 </div>
 
 <script>
+    /* --- ДВИЖОК ПЛАВНЫХ ПЕРЕХОДОВ --- */
+    // Анимация смены контента внутри контейнера
+    async function smoothUpdate(elementId, updateLogic) {
+        const el = document.getElementById(elementId);
+        // Затухание и сдвиг вверх
+        el.classList.add('smooth-out');
+        await new Promise(r => setTimeout(r, 300)); // Ждем окончания CSS анимации
+        
+        // Быстро меняем контент
+        updateLogic();
+        
+        // Телепортируем вниз и плавно показываем
+        el.classList.remove('smooth-out');
+        el.classList.add('smooth-in');
+        void el.offsetWidth; // Магия браузера для перерисовки
+        el.classList.remove('smooth-in');
+    }
+
+    // Полная смена экранов
+    function switchScreen(hideId, showId) {
+        document.getElementById(hideId).classList.add('hidden');
+        const showEl = document.getElementById(showId);
+        showEl.classList.remove('hidden');
+        showEl.classList.add('smooth-in');
+        void showEl.offsetWidth;
+        showEl.classList.remove('smooth-in');
+        document.querySelectorAll('.screen').forEach(el => el.scrollTop = 0);
+    }
+
     /* --- НАСТРОЙКИ UI --- */
     let currentZoom = 1; let isDark = false;
+    const moonIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+    const sunIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`;
 
     if (localStorage.getItem('theme') === 'dark') toggleTheme();
+    else document.getElementById('btn-theme').innerHTML = moonIcon;
     if (localStorage.getItem('zoom')) { currentZoom = parseFloat(localStorage.getItem('zoom')); applyZoom(); }
 
     function toggleTheme() {
         isDark = !isDark; document.body.classList.toggle('dark-theme', isDark);
-        document.getElementById('btn-theme').innerText = isDark ? '☀️' : '🌙';
+        document.getElementById('btn-theme').innerHTML = isDark ? sunIcon : moonIcon;
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
-
+    
     function toggleZoom() {
         currentZoom = currentZoom === 1 ? 1.25 : currentZoom === 1.25 ? 1.5 : 1;
         applyZoom(); localStorage.setItem('zoom', currentZoom);
     }
-
-    function applyZoom() {
-        document.documentElement.style.fontSize = (16 * currentZoom) + 'px';
-        document.getElementById('btn-zoom').innerText = `🔍 ${currentZoom}x`;
-    }
+    
+    function applyZoom() { document.documentElement.style.fontSize = (16 * currentZoom) + 'px'; }
 
     /* --- ЛОГИКА ДАННЫХ --- */
-    let globalDB = null;
-    let currentMode = 'official'; // official, cat_b, cat_a
-    let currentTest = null;
-    let currentQuestionIndex = 0;
-    let userAnswers = [];
-    let timerInterval = null;
-    let timeRemaining = 1800;
+    let globalDB = null; let currentMode = 'official'; 
+    let currentTest = null; let currentQuestionIndex = 0;
+    let userAnswers = []; let timerInterval = null; let timeRemaining = 1800;
 
     async function loadData() {
         try {
-            // Грузим новый супер-файл database.json
             const response = await fetch('database.json');
             globalDB = await response.json();
-            
-            // Сортировка официальных тестов
-            if(globalDB.official) {
-                globalDB.official.sort((a, b) => parseInt(a.id || a.test_id || 0) - parseInt(b.id || b.test_id || 0));
-            }
-            
+            if(globalDB.official) globalDB.official.sort((a, b) => parseInt(a.id || a.test_id || 0) - parseInt(b.id || b.test_id || 0));
             document.getElementById('loading-msg').classList.add('hidden');
             switchTab('official'); 
         } catch (error) {
-            document.getElementById('loading-msg').innerHTML = '<span style="color:var(--wrong-text);">Error: Cannot load database.json. Check Local Server!</span>';
+            document.getElementById('loading-msg').innerHTML = '<span style="color:var(--wrong-text);">Error: Cannot load database.json</span>';
         }
     }
 
     function switchTab(mode) {
         currentMode = mode;
-        
-        // Обновляем визуал кнопок
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${mode}`).classList.add('active');
 
         const title = document.getElementById('section-title');
         const desc = document.getElementById('section-desc');
-        const grid = document.getElementById('content-grid');
-        grid.innerHTML = '';
+        
+        // Плавная смена контента сетки
+        smoothUpdate('content-grid', () => {
+            const grid = document.getElementById('content-grid');
+            grid.innerHTML = '';
 
-        if (mode === 'official') {
-            title.innerText = "Official Auto Exams";
-            desc.innerText = "Simulate the real exam. 30 minutes time limit.";
-            grid.className = 'test-grid';
-            
-            globalDB.official.forEach((test, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'test-btn';
-                btn.innerText = test.name; 
-                btn.onclick = () => startTest(index, mode);
-                grid.appendChild(btn);
-            });
-        } else {
-            title.innerText = mode === 'cat_b' ? "Topics: Category B" : "Topics: Category A";
-            desc.innerText = "Study specific categories without a time limit.";
-            grid.className = 'cat-list';
-            
-            globalDB[mode].forEach((cat, index) => {
-                const card = document.createElement('div');
-                card.className = 'cat-card';
-                card.innerHTML = `
-                    <div class="cat-name">${cat.name}</div>
-                    <div class="cat-count">${cat.questions.length} q</div>
-                `;
-                card.onclick = () => startTest(index, mode);
-                grid.appendChild(card);
-            });
-        }
-    }
-
-    function switchScreen(hideId, showId) {
-        document.getElementById(hideId).classList.add('hidden');
-        const showEl = document.getElementById(showId);
-        showEl.classList.remove('hidden');
-        showEl.classList.remove('fade-in'); void showEl.offsetWidth; showEl.classList.add('fade-in');
-        document.querySelectorAll('.screen').forEach(el => el.scrollTop = 0);
+            if (mode === 'official') {
+                title.innerText = "Official Exams"; desc.innerText = "30 minutes. Strict exam rules.";
+                grid.className = 'test-grid smooth-container';
+                globalDB.official.forEach((test, index) => {
+                    const btn = document.createElement('button'); btn.className = 'test-btn stagger-item'; 
+                    btn.style.setProperty('--idx', index); btn.innerText = test.name; 
+                    btn.onclick = () => startTest(index, mode); grid.appendChild(btn);
+                });
+            } else {
+                title.innerText = mode === 'cat_b' ? "Topics: Auto (B)" : "Topics: Moto (A)";
+                desc.innerText = "Study category by category. No timer.";
+                grid.className = 'cat-list smooth-container';
+                globalDB[mode].forEach((cat, index) => {
+                    const card = document.createElement('div'); card.className = 'cat-card stagger-item';
+                    card.style.setProperty('--idx', index);
+                    card.innerHTML = `<div class="cat-name">${cat.name}</div><div class="cat-count">${cat.questions.length} q</div>`;
+                    card.onclick = () => startTest(index, mode); grid.appendChild(card);
+                });
+            }
+        });
     }
 
     function startTest(index, mode) {
         currentTest = globalDB[mode][index];
         currentQuestionIndex = 0;
-        userAnswers = new Array(currentTest.questions.length).fill(null);
+        userAnswers = Array.from({ length: currentTest.questions.length }, () => []);
         
         document.getElementById('top-title').innerText = currentTest.name;
         document.getElementById('btn-home').classList.remove('hidden');
@@ -349,21 +398,21 @@
         if (mode === 'official') {
             timeRemaining = 1800;
             document.getElementById('timer').classList.remove('hidden');
-            document.getElementById('btn-end').classList.add('hidden'); // Убираем кнопку досрочного завершения
+            document.getElementById('btn-end').classList.add('hidden');
             startTimer();
         } else {
             document.getElementById('timer').classList.add('hidden');
-            document.getElementById('btn-end').classList.remove('hidden'); // Показываем кнопку досрочного завершения для категорий
+            document.getElementById('btn-end').classList.remove('hidden');
         }
         
         switchScreen('screen-menu', 'screen-quiz');
-        showQuestion();
+        renderQuestionContent(); // Первый рендер без анимации
     }
 
     function startTimer() {
         clearInterval(timerInterval);
         const timerEl = document.getElementById('timer');
-        timerEl.style.color = 'var(--text-dark)'; timerEl.style.backgroundColor = 'var(--border)';
+        timerEl.style.color = 'var(--text-dark)'; timerEl.style.backgroundColor = 'var(--btn-nav)';
         
         timerInterval = setInterval(() => {
             timeRemaining--;
@@ -376,71 +425,77 @@
         }, 1000);
     }
 
-    function showQuestion() {
+    function renderQuestionContent() {
         const q = currentTest.questions[currentQuestionIndex];
         const total = currentTest.questions.length;
         
         document.getElementById('progress-bar').style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
         document.getElementById('q-counter').innerText = `Question ${currentQuestionIndex + 1} of ${total}`;
         
-        // Считаем сколько уже отвечено для категорий
         if(currentMode !== 'official') {
-            const answered = userAnswers.filter(a => a !== null).length;
-            document.getElementById('q-status').innerText = `${answered} answered`;
-        } else {
-            document.getElementById('q-status').innerText = "";
-        }
+            const answered = userAnswers.filter(arr => arr.length > 0).length;
+            document.getElementById('q-status').innerText = `${answered} done`;
+        } else document.getElementById('q-status').innerText = "";
         
-        const textEl = document.getElementById('q-text');
-        textEl.innerText = q.question;
-        textEl.classList.remove('fade-in'); void textEl.offsetWidth; textEl.classList.add('fade-in');
+        document.getElementById('q-text').innerText = q.question;
 
         const imgEl = document.getElementById('q-image');
-        if (q.image) {
-            imgEl.src = q.image; imgEl.classList.remove('hidden');
-            imgEl.classList.remove('fade-in'); void imgEl.offsetWidth; imgEl.classList.add('fade-in');
-        } else { imgEl.classList.add('hidden'); }
+        if (q.image) { imgEl.src = q.image; imgEl.classList.remove('hidden'); } 
+        else { imgEl.classList.add('hidden'); }
 
         const optionsContainer = document.getElementById('q-options');
         optionsContainer.innerHTML = '';
-        optionsContainer.classList.remove('fade-in'); void optionsContainer.offsetWidth; optionsContainer.classList.add('fade-in');
-        
+        const currentSelections = userAnswers[currentQuestionIndex];
+
         q.options.forEach((opt, idx) => {
-            const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = opt.text;
-            if (userAnswers[currentQuestionIndex] === idx) btn.classList.add('selected');
+            const btn = document.createElement('button'); 
+            btn.className = 'option-btn stagger-item'; 
+            btn.style.setProperty('--idx', idx);
+            btn.innerText = opt.text;
+            
+            if (currentSelections.includes(idx)) btn.classList.add('selected');
             
             btn.onclick = () => {
-                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected'); 
-                userAnswers[currentQuestionIndex] = idx;
+                const indexInArr = currentSelections.indexOf(idx);
+                if (indexInArr > -1) { currentSelections.splice(indexInArr, 1); btn.classList.remove('selected'); } 
+                else { currentSelections.push(idx); btn.classList.add('selected'); }
+
                 if(currentMode !== 'official') {
-                    document.getElementById('q-status').innerText = `${userAnswers.filter(a => a !== null).length} answered`;
+                    const answered = userAnswers.filter(arr => arr.length > 0).length;
+                    document.getElementById('q-status').innerText = `${answered} done`;
                 }
             };
             optionsContainer.appendChild(btn);
         });
 
         document.getElementById('btn-prev').style.display = currentQuestionIndex === 0 ? 'none' : 'block';
-        
         const nextBtn = document.getElementById('btn-next');
         if (currentQuestionIndex === total - 1) {
-            nextBtn.innerText = 'Finish Test'; nextBtn.style.backgroundColor = 'var(--text-dark)'; nextBtn.style.color = 'var(--bg-app)';
+            nextBtn.innerText = 'Finish'; nextBtn.style.backgroundColor = 'var(--text-dark)'; nextBtn.style.color = 'var(--bg-app)';
         } else {
             nextBtn.innerText = 'Next'; nextBtn.style.backgroundColor = 'var(--primary)'; nextBtn.style.color = 'white';
         }
     }
 
-    function prevQuestion() { if (currentQuestionIndex > 0) { currentQuestionIndex--; showQuestion(); } }
+    function prevQuestion() { 
+        if (currentQuestionIndex > 0) { 
+            currentQuestionIndex--; 
+            smoothUpdate('q-wrapper', renderQuestionContent); 
+        } 
+    }
     
     function nextQuestion() {
-        if (userAnswers[currentQuestionIndex] === null) {
+        if (userAnswers[currentQuestionIndex].length === 0) {
             const opts = document.getElementById('q-options');
-            opts.style.transform = 'translateX(10px)'; setTimeout(() => opts.style.transform = 'translateX(-10px)', 100); setTimeout(() => opts.style.transform = 'translateX(0)', 200);
+            opts.style.transform = 'translateX(15px)'; setTimeout(() => opts.style.transform = 'translateX(-15px)', 80); 
+            setTimeout(() => opts.style.transform = 'translateX(10px)', 160); setTimeout(() => opts.style.transform = 'translateX(0)', 240);
             return;
         }
 
-        if (currentQuestionIndex < currentTest.questions.length - 1) { currentQuestionIndex++; showQuestion(); } 
-        else { finishTest(); }
+        if (currentQuestionIndex < currentTest.questions.length - 1) { 
+            currentQuestionIndex++; 
+            smoothUpdate('q-wrapper', renderQuestionContent); 
+        } else finishTest(); 
     }
 
     function finishTest() {
@@ -448,67 +503,60 @@
         document.getElementById('timer').classList.add('hidden'); document.getElementById('quiz-nav').classList.add('hidden');
         switchScreen('screen-quiz', 'screen-result');
 
-        let correctCount = 0;
-        let answeredCount = 0;
-        const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = '';
+        let correctCount = 0; let answeredCount = 0;
+        const reviewList = document.getElementById('review-list'); reviewList.innerHTML = '';
 
         currentTest.questions.forEach((q, qIdx) => {
-            const userAnsIdx = userAnswers[qIdx];
-            if (userAnsIdx !== null) answeredCount++;
-            
-            const correctOpt = q.options.find(o => o.isCorrect) || { text: 'N/A' };
-            const userOpt = userAnsIdx !== null ? q.options[userAnsIdx] : null;
-            const isCorrect = userOpt && userOpt.isCorrect;
+            const userAnsArr = userAnswers[qIdx] || [];
+            if (userAnsArr.length > 0) answeredCount++;
+
+            const correctIndices = []; const correctTexts = [];
+            q.options.forEach((o, i) => { if (o.isCorrect) { correctIndices.push(i); correctTexts.push(o.text); } });
+
+            const userSorted = [...userAnsArr].sort(); const correctSorted = [...correctIndices].sort();
+            const isCorrect = userSorted.length > 0 && userSorted.length === correctSorted.length && userSorted.every((val, index) => val === correctSorted[index]);
 
             if (isCorrect) correctCount++;
 
-            // Для официальных тестов показываем ВСЁ. Для категорий - ТОЛЬКО ОШИБКИ И ПРОПУСКИ (чтобы не листать 100 вопросов).
             if (currentMode === 'official' || !isCorrect) {
                 const div = document.createElement('div');
-                div.className = `review-card fade-in ${isCorrect ? 'correct' : 'wrong'}`;
+                div.className = `review-card stagger-item ${isCorrect ? 'correct' : 'wrong'}`;
+                div.style.setProperty('--idx', Math.min(qIdx, 20)); // Ограничиваем индекс задержки, чтобы не ждать долго
                 
                 let userAnsHtml = '';
-                if (userOpt) {
+                if (userAnsArr.length > 0) {
+                    const userList = userAnsArr.map(i => `<li>${q.options[i].text}</li>`).join('');
+                    const correctList = correctTexts.map(text => `<li>${text}</li>`).join('');
                     userAnsHtml = isCorrect 
-                        ? `<div class="ans-text ans-correct">✓ You selected: ${userOpt.text}</div>`
-                        : `<div class="ans-text ans-wrong">✗ You selected: ${userOpt.text}</div>
-                           <div class="ans-text ans-correct">✓ Correct: ${correctOpt.text}</div>`;
+                        ? `<div class="ans-text ans-correct">✓ You selected:<ul class="ans-list">${userList}</ul></div>`
+                        : `<div class="ans-text ans-wrong">✗ You selected:<ul class="ans-list">${userList}</ul></div><div class="ans-text ans-correct">✓ Correct:<ul class="ans-list">${correctList}</ul></div>`;
                 } else {
-                    userAnsHtml = `<div class="ans-text ans-missed">⚠ Skipped. Correct answer: ${correctOpt.text}</div>`;
+                    const correctList = correctTexts.map(text => `<li>${text}</li>`).join('');
+                    userAnsHtml = `<div class="ans-text ans-missed">⚠ Skipped. Correct:<ul class="ans-list">${correctList}</ul></div>`;
                 }
 
                 div.innerHTML = `
                     <div class="badge ${isCorrect ? 'badge-correct' : 'badge-wrong'}">${isCorrect ? 'Correct' : 'Mistake / Missed'}</div>
-                    <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.6rem;">${qIdx + 1}. ${q.question}</div>
-                    ${q.image ? `<img src="${q.image}" style="width:100%; max-width: 15rem; border-radius: 0.5rem; margin-bottom: 0.6rem; border: 1px solid var(--border);">` : ''}
+                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.8rem; letter-spacing: -0.01em;">${qIdx + 1}. ${q.question}</div>
+                    ${q.image ? `<img src="${q.image}" style="width:100%; max-width: 18rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border);">` : ''}
                     ${userAnsHtml}
                 `;
                 reviewList.appendChild(div);
             }
         });
 
-        if (reviewList.innerHTML === '') {
-            reviewList.innerHTML = '<p style="color:var(--correct-text); font-weight:bold; text-align:center;">Perfect! No mistakes found.</p>';
-        }
+        if (reviewList.innerHTML === '') reviewList.innerHTML = '<div class="stagger-item" style="padding: 2rem; background: var(--correct-bg); color: var(--correct-text); border-radius: var(--radius-lg); text-align: center; font-weight: 600; font-size: 1.1rem;">🎉 Flawless! No mistakes found.</div>';
 
-        const circle = document.getElementById('final-score');
-        const status = document.getElementById('final-status');
-        
+        const circle = document.getElementById('final-score'); const status = document.getElementById('final-status');
         circle.innerText = correctCount;
         
-        // Логика текста под результатом
         if (currentMode === 'official') {
             document.getElementById('score-text').innerText = `out of ${currentTest.questions.length} correct`;
             document.getElementById('review-title').innerText = "Test Review";
-            const passMark = Math.floor(currentTest.questions.length * 0.84); // ~22/26
-            if (correctCount >= passMark) {
-                status.innerText = "PASSED!"; status.style.color = "var(--correct-text)"; circle.style.borderColor = "var(--correct-text)"; circle.style.color = "var(--correct-text)";
-            } else {
-                status.innerText = "FAILED"; status.style.color = "var(--wrong-text)"; circle.style.borderColor = "var(--wrong-text)"; circle.style.color = "var(--wrong-text)";
-            }
+            const passMark = Math.floor(currentTest.questions.length * 0.84); 
+            if (correctCount >= passMark) { status.innerText = "PASSED"; status.style.color = "var(--correct-text)"; circle.style.borderColor = "var(--correct-text)"; circle.style.color = "var(--correct-text)"; } 
+            else { status.innerText = "FAILED"; status.style.color = "var(--wrong-text)"; circle.style.borderColor = "var(--wrong-text)"; circle.style.color = "var(--wrong-text)"; }
         } else {
-            // Для категорий
             document.getElementById('score-text').innerText = `correct out of ${answeredCount} answered`;
             document.getElementById('review-title').innerText = "Mistakes Review";
             status.innerText = "Training Complete";
@@ -518,18 +566,13 @@
 
     function backToMenu() {
         clearInterval(timerInterval);
-        document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-result').classList.add('hidden');
         document.getElementById('quiz-nav').classList.add('hidden'); document.getElementById('timer').classList.add('hidden');
         document.getElementById('btn-home').classList.add('hidden');
-        
-        const menu = document.getElementById('screen-menu');
-        menu.classList.remove('hidden'); menu.classList.remove('fade-in'); void menu.offsetWidth; menu.classList.add('fade-in');
-        
-        document.getElementById('top-title').innerText = "These Goddamn Driving Tests";
-        window.scrollTo(0, 0);
+        switchScreen('screen-quiz', 'screen-menu');
+        switchScreen('screen-result', 'screen-menu');
+        document.getElementById('top-title').innerText = "Driver's Hub";
     }
 
-    // Инициализация
     loadData();
 </script>
 
